@@ -1,6 +1,6 @@
 package bj.formation.demoprojet.services;
 
-import bj.formation.demoprojet.dtos.EnfantDto;
+import bj.formation.demoprojet.dtos.EnfantRequestDto;
 import bj.formation.demoprojet.entities.Agent;
 import bj.formation.demoprojet.entities.Enfant;
 import bj.formation.demoprojet.entities.NiveauEnfant;
@@ -9,15 +9,12 @@ import bj.formation.demoprojet.mappers.EnfantMapper;
 import bj.formation.demoprojet.repositories.AgentRepository;
 import bj.formation.demoprojet.repositories.EnfantRepository;
 import bj.formation.demoprojet.repositories.NiveauEnfantRepository;
-import bj.formation.demoprojet.requests.EnfantRequest;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,38 +24,32 @@ public class EnfantService {
     private final NiveauEnfantRepository niveauEnfantRepository;
     private  final EnfantMapper enfantMapper;
 
-    public ResponseEntity<Object> saveEnfant(EnfantRequest resquest){
-        /*Agent oldAgent = agentRepository.findById(resquest.getAgent().getMatricule())
-                        .orElse(null);
-        NiveauEnfant niveauEnfant = niveauEnfantRepository.findById()
-                .orElse(null);
-        if(niveauEnfant != null){
+    public ResponseEntity<Object> saveEnfant(EnfantRequestDto request){
 
-            if(oldAgent != null){*/
-                Enfant enfant = enfantMapper.deDto(resquest);
-                enfantRepository.save(enfant);
-                return HttpResponseHandler.generateResponse(
-                        true,
-                        "Enfant enregistré",
-                        HttpStatus.OK,enfant,
-                        "/api/enfants"
-                );
-            /*}else {
-                return HttpResponseHandler.generateResponse(
-                        false,
-                        "L'agent fourni est introuvable",
-                        HttpStatus.NOT_FOUND,null,
-                        "/api/enfants"
-                );
-            }
-        }else {
+        Agent agentExist = (request.getAgentMatricule() != null && !request.getAgentMatricule().isEmpty()) ? agentRepository.findById(request.getAgentMatricule())
+                        .orElse(null):null;
+        NiveauEnfant niveauEnfantExist = niveauEnfantRepository.findById(request.getCode_niveau_enfant())
+                .orElse(null);
+
+        if (niveauEnfantExist == null) {
             return HttpResponseHandler.generateResponse(
                     false,
                     "Le niveau fourni est introuvable",
-                    HttpStatus.NOT_FOUND,null,
+                    HttpStatus.NOT_FOUND,
+                    null,
                     "/api/enfants"
             );
-        }*/
+        }
+
+        Enfant enfant = enfantMapper.toEntity(request, niveauEnfantExist, agentExist);
+        enfantRepository.saveAndFlush(enfant);
+
+        return HttpResponseHandler.generateResponse(
+                true,
+                "Enfant enregistré",
+                HttpStatus.OK,enfant,
+                "/api/enfants"
+        );
     }
 
     public ResponseEntity<Object> getAllEnfants(){
@@ -71,27 +62,81 @@ public class EnfantService {
         );
     }
 
-    public Enfant findEnfantById(Long id){
+    public ResponseEntity<Object> findEnfantById(Long id){
         Enfant enf = enfantRepository.findById(id)
-                .orElseThrow( ()-> new RuntimeException("Enfnat introuvable avec l'id "+id));
-        return enf;
+                .orElse(null);
+        if(enf!=null){
+            return HttpResponseHandler.generateResponse(
+                    true,
+                    "Enfant récupéré",
+                    HttpStatus.OK,enf,
+                    "/api/enfants/"+id
+            );
+        }else {
+            return HttpResponseHandler.generateResponse(
+                    false,
+                    "Enfant introuvable",
+                    HttpStatus.NOT_FOUND,null,
+                    "/api/enfants/"+id
+            );
+        }
     }
 
-    public Enfant updateEnfant(Long id, Enfant enfantDetails){
-        Enfant enf = enfantRepository.findById(id)
-                .orElseThrow( ()-> new RuntimeException("Enfnat introuvable avec l'id "+id));
-        enf.setNom(enfantDetails.getNom());
-        enf.setPrenom(enfantDetails.getPrenom());
-        enf.setDateNaissance(enfantDetails.getDateNaissance());
-        enf.setNiveauEnfant(enfantDetails.getNiveauEnfant());
-        enf.setAgent(enfantDetails.getAgent());
+    public ResponseEntity<Object> updateEnfant(Long id, EnfantRequestDto enfantDetails){
+        Enfant enfantExist = enfantRepository.findById(id)
+                .orElse(null);
 
-        return enfantRepository.save(enf);
+        if(enfantExist == null){
+            return HttpResponseHandler.generateResponse(
+                    false,
+                    "Enfant introuvable",
+                    HttpStatus.NOT_FOUND,null,
+                    "/api/enfants/"+id
+            );
+        }
+
+        Agent agentExist = (enfantDetails.getAgentMatricule() != null) ? agentRepository.findById(enfantDetails.getAgentMatricule())
+                .orElse(null):enfantExist.getAgent();
+
+        NiveauEnfant niveauEnfantExist = (enfantDetails.getCode_niveau_enfant() != null) ? niveauEnfantRepository.findById(enfantDetails.getCode_niveau_enfant())
+                .orElse(null): enfantExist.getNiveauEnfant();
+
+        if (enfantDetails.getNom() != null) enfantExist.setNom(enfantDetails.getNom());
+        if (enfantDetails.getPrenom() != null) enfantExist.setPrenom(enfantDetails.getPrenom());
+        if (enfantDetails.getDateNaissance() != null) enfantExist.setDateNaissance(enfantDetails.getDateNaissance());
+
+        enfantExist.setNiveauEnfant(niveauEnfantExist);
+        enfantExist.setAgent(agentExist);
+
+        enfantRepository.saveAndFlush(enfantExist);
+
+        return HttpResponseHandler.generateResponse(
+                true,
+                "Enfant modifié avec succès",
+                HttpStatus.OK,enfantExist,
+                "/api/enfants/"+id
+        );
     }
 
-    public void deleteEnfant(Long id){
-        Enfant enf = enfantRepository.findById(id)
-                .orElseThrow( ()-> new RuntimeException("Enfnat introuvable avec l'id "+id));
-        enfantRepository.delete(enf);
+    public ResponseEntity<Object> deleteEnfant(Long id){
+
+        Enfant enfantExist = enfantRepository.findById(id)
+                .orElse(null);
+
+        if(enfantExist == null){
+            return HttpResponseHandler.generateResponse(
+                    false,
+                    "Enfant introuvable",
+                    HttpStatus.NOT_FOUND,null,
+                    "/api/enfants/"+id
+            );
+        }
+        enfantRepository.delete(enfantExist);
+        return HttpResponseHandler.generateResponse(
+                true,
+                "Enfant bien supprimé",
+                HttpStatus.OK,null,
+                "/api/enfants/"+id
+        );
     }
 }

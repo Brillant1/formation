@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -28,7 +29,7 @@ public class Enfant implements Serializable     {
     private String prenom;
 
     @Column(name = "enfa_dateNaissance")
-    private Date dateNaissance;
+    private LocalDate dateNaissance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enfa_niveau_enfant_id", referencedColumnName = "nive_code")

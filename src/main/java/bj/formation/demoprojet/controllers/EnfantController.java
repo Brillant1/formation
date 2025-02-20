@@ -2,6 +2,7 @@ package bj.formation.demoprojet.controllers;
 
 
 import bj.formation.demoprojet.dtos.EnfantDto;
+import bj.formation.demoprojet.dtos.EnfantRequestDto;
 import bj.formation.demoprojet.entities.Enfant;
 import bj.formation.demoprojet.requests.EnfantRequest;
 import bj.formation.demoprojet.services.EnfantService;
@@ -20,7 +21,7 @@ public class EnfantController {
 
 
     @PostMapping
-    public ResponseEntity<Object> saveEnfant(EnfantRequest request){
+    public ResponseEntity<Object> saveEnfant(@RequestBody EnfantRequestDto request){
         return enfantService.saveEnfant(request);
     }
 
@@ -30,25 +31,18 @@ public class EnfantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Enfant> getEnfantById(@PathVariable Long id){
-        Enfant enf = enfantService.findEnfantById(id);
-        return ResponseEntity.ok(enf);
+    public ResponseEntity<Object> getEnfantById(@PathVariable Long id){
+        return enfantService.findEnfantById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Enfant> updateEnfant(@PathVariable Long id, @RequestBody Enfant enfantDetails){
-        Enfant enf = enfantService.updateEnfant(id, enfantDetails);
-        return ResponseEntity.ok(enf);
+    public ResponseEntity<Object> updateEnfant(@PathVariable Long id, @RequestBody EnfantRequestDto enfantDetails){
+        return enfantService.updateEnfant(id, enfantDetails);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEnfant(Long id){
-        try {
-            enfantService.deleteEnfant(id);
-            return ResponseEntity.ok("Enfant supprimé avec succès");
-        }catch(RuntimeException e){
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+    public ResponseEntity<Object> deleteEnfant(@PathVariable Long id){
+        return enfantService.deleteEnfant(id);
     }
 
 

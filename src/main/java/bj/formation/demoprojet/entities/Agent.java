@@ -53,5 +53,4 @@ public class Agent implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     private Set<AgentElementPaie> listAgentElementPaie;
-
 }

@@ -17,8 +17,6 @@ public class HttpResponseHandler {
         map.put("data", responseObj);
         map.put("endpoint", endpoint);
 
-
-
         return new ResponseEntity<>(map, status);
     }
 }
