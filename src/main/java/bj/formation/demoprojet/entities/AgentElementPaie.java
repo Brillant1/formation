@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 
 @Data
@@ -18,10 +19,17 @@ import java.io.Serializable;
 public class AgentElementPaie implements Serializable {
     @Id
     @Column(name="agent_element_paie_id", unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name="agent_element_paie_montant")
-    private int montant;
+    private Integer montant;
+
+    @Column(name="agent_grade_date_debut")
+    private LocalDate dateDebut;
+
+    @Column(name="agent_grade_date_fin")
+    private LocalDate dateFin;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_element_paie_elementPaie_code", referencedColumnName = "elementPaie_code")

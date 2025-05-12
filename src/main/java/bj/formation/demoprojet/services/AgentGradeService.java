@@ -54,7 +54,6 @@ public class AgentGradeService {
         agentGrade.setGrade(grade);
 
         return agentGradeRepository.save(agentGrade);
-
     }
 
     public void deleteAgentGrade(Long id){

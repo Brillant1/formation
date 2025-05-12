@@ -1,11 +1,13 @@
 package bj.formation.demoprojet.controllers;
 
 
+import bj.formation.demoprojet.dtos.AgentEnfantDto;
 import bj.formation.demoprojet.dtos.EnfantDto;
 import bj.formation.demoprojet.dtos.EnfantRequestDto;
 import bj.formation.demoprojet.entities.Enfant;
 import bj.formation.demoprojet.requests.EnfantRequest;
 import bj.formation.demoprojet.services.EnfantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +21,17 @@ public class EnfantController {
 
     private final EnfantService enfantService;
 
-
     @PostMapping
-    public ResponseEntity<Object> saveEnfant(@RequestBody EnfantRequestDto request){
+    public ResponseEntity<Object> saveEnfant(@Valid  @RequestBody EnfantRequestDto request){
         return enfantService.saveEnfant(request);
     }
+
+    @PostMapping("addChildrenToAgent")
+    public ResponseEntity<Object> addChildrenToAgent(@Valid  @RequestBody AgentEnfantDto request){
+        return enfantService.addChildrenToAgent(request);
+    }
+
+
 
     @GetMapping
     public ResponseEntity<Object> getAllEnfants(){

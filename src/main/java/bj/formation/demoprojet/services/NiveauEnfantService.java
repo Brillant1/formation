@@ -29,7 +29,7 @@ public class NiveauEnfantService {
                 true,
                 "Le niveau a été créé avec succès",
                 HttpStatus.CREATED,niveauEnfant,
-                "/api/niveau-enfants"
+                null, "/api/niveau-enfants"
         );
     }
 
@@ -40,7 +40,7 @@ public class NiveauEnfantService {
                 true,
                 "List des niveaux",
                 HttpStatus.OK,
-                niveaux,
+                niveaux, null,
                 "api/niveaux"
         );
     }
@@ -54,14 +54,14 @@ public class NiveauEnfantService {
                     true,
                     "Le niveau a été récupéré",
                     HttpStatus.OK,niveau,
-                    "/api/niveaux/"+code
+                    null, "/api/niveaux/"+code
             );
         }else {
             return HttpResponseHandler.generateResponse(
                     false,
                     "Le niveau n'existe pas",
                     HttpStatus.NOT_FOUND,null,
-                    "/api/niveaux/"+code
+                    null, "/api/niveaux/"+code
             );
         }
     }
@@ -76,7 +76,7 @@ public class NiveauEnfantService {
                     false,
                     "Niveau modifié avec succès",
                     HttpStatus.OK,niveauEnfant,
-                    "/api/niveau-enfants"
+                    null, "/api/niveau-enfants"
             );
         }
 
@@ -84,7 +84,7 @@ public class NiveauEnfantService {
                 false,
                 "Le niveau avec ce code n'existe pas",
                 HttpStatus.NOT_FOUND,null,
-                "/api/niveau-enfants/"+code
+                null, "/api/niveau-enfants/"+code
         );
     }
 
@@ -98,14 +98,14 @@ public class NiveauEnfantService {
                     true,
                     "Le niveau a été supprimé avec succès",
                     HttpStatus.OK,null,
-                    "/apie niveau-enfants/"+code
+                    null, "/api/niveau-enfants/"+code
             );
         }else {
             return HttpResponseHandler.generateResponse(
                     false,
                     "Le niveau n'existe pas",
                     HttpStatus.NOT_FOUND,null,
-                    "/api/niveau-enfants/"+code
+                    null, "/api/niveau-enfants/"+code
             );
         }
     }

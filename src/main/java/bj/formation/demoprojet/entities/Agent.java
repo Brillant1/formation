@@ -46,7 +46,7 @@ public class Agent implements Serializable {
     private  int nbreEnfant;
 
     @Column(name = "agen_actif")
-    private  Boolean actif;
+    private  Boolean actif = true;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     private Set<AgentGrade> listAgentGrade;

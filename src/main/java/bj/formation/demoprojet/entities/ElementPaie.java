@@ -26,7 +26,4 @@ public class ElementPaie implements Serializable {
     @Column(name = "element_paie_libelle")
     private String libelle;
 
-
-
-
 }
